@@ -19,17 +19,18 @@ class Mercenheros
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column]
-    private ?bool $isAvailable = null;
-
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $isAvailable = false;
+    
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     #[ORM\Column(length: 50)]
     private ?string $etat = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
+    
 
     #[ORM\Column]
     private ?int $munitions = null;
@@ -56,6 +57,8 @@ class Mercenheros
     {
         $this->competences = new ArrayCollection();
         $this->teamMembers = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+
     }
 
     public function getId(): ?int
@@ -74,18 +77,19 @@ class Mercenheros
 
         return $this;
     }
-
+   
     public function isAvailable(): ?bool
     {
         return $this->isAvailable;
     }
-
-    public function setAvailable(bool $isAvailable): static
+    
+    public function setIsAvailable(bool $isAvailable): static
     {
         $this->isAvailable = $isAvailable;
-
+    
         return $this;
     }
+    
 
     public function getDescription(): ?string
     {
@@ -115,11 +119,11 @@ class Mercenheros
     {
         return $this->createdAt;
     }
-
+    
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
+    
         return $this;
     }
 

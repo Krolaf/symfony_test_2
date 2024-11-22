@@ -1,12 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create Mercenhero{% endblock %}
+{% block title %}Créer un Mercenhero{% endblock %}
 
 {% block content %}
-<h1>Create a New Mercenhero</h1>
+<h1>Créer un Mercenhero</h1>
 
 {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button type="submit">Save</button>
+    <button type="submit" class="btn btn-primary">Créer</button>
 {{ form_end(form) }}
+
+<a href="{{ path('mercenheros_listing') }}">Retour à la liste</a>
 {% endblock %}

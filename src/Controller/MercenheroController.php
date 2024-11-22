@@ -12,8 +12,24 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MercenheroController extends AbstractController
 {
+    // #[Route('/test_form', name: 'test_form')]
+    // public function testForm(Request $request, EntityManagerInterface $entityManager): Response
+    // {
+    //     $mercenhero = new Mercenheros();
+    //     $form = $this->createForm(MercenheroType::class, $mercenhero);
+    
+    //     $form->handleRequest($request);
+    
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         return new Response('Form submitted successfully!');
+    //     }
+    
+    //     return $this->render('mercenhero/test_form.html.twig', [
+    //         'form' => $form->createView(),
+    //     ]);
+    // }
 
-    #[Route('/liste_mercenheros', name: 'mercenhero_list')]
+    #[Route('/mercenheros_listing', name: 'mercenheros_listing')]
     public function list(EntityManagerInterface $entityManager): Response
     {
         $mercenheros = $entityManager->getRepository(Mercenheros::class)->findAll();
@@ -28,36 +44,39 @@ class MercenheroController extends AbstractController
     {
         $mercenhero = new Mercenheros();
         $form = $this->createForm(MercenheroType::class, $mercenhero);
-
+    
         $form->handleRequest($request);
+    
         if ($form->isSubmitted() && $form->isValid()) {
+            // Persister l'entité en base de données
             $entityManager->persist($mercenhero);
             $entityManager->flush();
-
-            $this->addFlash('success', 'Mercenhero created successfully!');
-
-            return $this->redirectToRoute('mercenhero_list');
+    
+            $this->addFlash('success', 'Mercenhero créé avec succès !');
+    
+            return $this->redirectToRoute('mercenheros_listing');
         }
-
+    
         return $this->render('mercenhero/create.html.twig', [
             'form' => $form->createView(),
         ]);
     }
-
+    
     #[Route('/mercenheros/edit/{id}', name: 'mercenhero_edit')]
     public function edit(Request $request, Mercenheros $mercenhero, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(MercenheroType::class, $mercenhero);
-
+    
         $form->handleRequest($request);
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
-            $this->addFlash('success', 'Mercenhero updated successfully!');
-
-            return $this->redirectToRoute('mercenhero_list');
+    
+            $this->addFlash('success', 'Mercenhero modifié avec succès !');
+    
+            return $this->redirectToRoute('mercenheros_listing');
         }
-
+    
         return $this->render('mercenhero/edit.html.twig', [
             'form' => $form->createView(),
         ]);
@@ -71,7 +90,7 @@ class MercenheroController extends AbstractController
 
         $this->addFlash('success', 'Mercenhero deleted successfully!');
 
-        return $this->redirectToRoute('mercenhero_list');
+        return $this->redirectToRoute('mercenheros_listing');
     }
 }
 ?>

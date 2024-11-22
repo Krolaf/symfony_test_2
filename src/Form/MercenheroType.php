@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,7 +21,7 @@ class MercenheroType extends AbstractType
                 'label' => 'Name',
             ])
             ->add('isAvailable', CheckboxType::class, [
-                'label' => 'Is Available',
+                'label' => 'Disponible',
                 'required' => false,
             ])
             ->add('description', TextareaType::class, [
@@ -28,6 +29,11 @@ class MercenheroType extends AbstractType
             ])
             ->add('etat', TextType::class, [
                 'label' => 'State',
+            ])
+            ->add('createdAt', DateTimeType::class, [
+                'widget' => 'single_text', // Utilise un input HTML5
+                'label' => 'Date de création',
+                'required' => false, // Facultatif car il est généré automatiquement
             ])
             ->add('munitions', IntegerType::class, [
                 'label' => 'Ammunitions',
