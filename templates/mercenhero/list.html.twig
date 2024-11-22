@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil Mercenheros{% endblock %}
+
+{% block content %}
+<h1>Accueil - Mercenheros</h1>
+
+<a href="{{ path('mercenhero_create') }}" class="btn btn-primary">Créer un nouveau Mercenhero</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>État</th>
+            <th>Disponible</th>
+            <th>Munitions</th>
+            <th>PV</th>
+            <th>Niveau</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for mercenhero in mercenheros %}
+            <tr>
+                <td>{{ mercenhero.id }}</td>
+                <td>{{ mercenhero.name }}</td>
+                <td>{{ mercenhero.etat }}</td>
+                <td>{{ mercenhero.isAvailable ? 'Oui' : 'Non' }}</td>
+                <td>{{ mercenhero.munitions }}</td>
+                <td>{{ mercenhero.lifePoints }}</td>
+                <td>{{ mercenhero.lvl }}</td>
+                <td>
+                    <a href="{{ path('mercenhero_edit', { id: mercenhero.id }) }}">✏️ Modifier</a>
+                    <a href="{{ path('mercenhero_delete', { id: mercenhero.id }) }}" onclick="return confirm('Voulez-vous vraiment supprimer ce mercenhero ?')">❌ Supprimer</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">Aucun mercenhero trouvé.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

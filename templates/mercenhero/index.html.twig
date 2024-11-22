@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <div class="dashboard-links">
+        <a href="{{ path('mercenhero_list') }}" class="dashboard-link">Voir toutes les missions</a>
+        <a href="{{ path('mercenhero_create') }}" class="dashboard-link">Voir toutes les équipes</a>
+        <a href="{{ path('mercenhero_edit') }}" class="dashboard-link">Voir tous les mercenaires</a>
+    </div>
+
+<h1>Missions En cours</h1>
+<ul>
+    {% for mission in ongoingMissions %}
+        <li>{{ mission.title }} - {{ mission.location }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Mercenhero{% endblock %}
+
+{% block content %}
+<h1>Edit Mercenhero</h1>
+
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button type="submit">Update</button>
+{{ form_end(form) }}
+{% endblock %}

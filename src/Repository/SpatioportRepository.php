@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\spatioport;
+use App\Entity\Spatioport;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
