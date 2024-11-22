@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mon Site Symfony{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/script.js"></script>
+</head>
+<body>
+    <div id="hyperspace">
+        {% for i in 1..300 %}
+            <div class="star" style="
+                left: {{ random(0, 100) }}%;
+                top: {{ random(0, 100) }}%;
+                animation-duration: {{ random(2, 5) }}s;
+                animation-delay: {{ random(0, 2) }}s;
+            "></div>
+        {% endfor %}
+            <div class="planet-container">
+                <div class="planet planet1"></div>
+                
+                <div class="planet planet2"></div>
+            </div>
+    </div>
+
+        
+<div class="scroll-animation">
+
+    <header>
+        {% block header %}
+        <h1>féderation du commerce intergalactique</h1>
+        {% endblock %}
+    </header>
+
+    <nav>
+        {% block navigation %}
+        <ul>
+            <li><a href="{{ path('home') }}">Accueil</a></li>
+            <li><a href="{{ path('about') }}">À propos</a></li>
+            <li><a href="{{ path('catalogue') }}">Catalogue</a></li>
+            <li><a href="{{ path('app_contrebande_animaliere') }}">Animalerie de contrebande</a></li>
+            <li><a href="{{ path('mercenhiring') }}">MercenHiring</a></li>
+        </ul>
+        {% endblock %}
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        {% block footer %}
+        <p>&copy; 2024 Mon Site Symfony</p>
+        {% endblock %}
+    </footer>
+</div>
+</body>
+</html>

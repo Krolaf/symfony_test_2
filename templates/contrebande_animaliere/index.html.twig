@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contrebande Animalière{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Liste des Spatioports et leurs Animaux</h2>
+
+    {% for spatioport in spatioports %}
+        <!-- Carte Spatioport -->
+        <div class="big_card_spatioport" style="cursor: pointer;" onclick="this.querySelector('form.spatioport-form').submit();">
+            <form method="POST" action="{{ path('spatioport_show', { id: spatioport.id }) }}" class="spatioport-form">
+                <div class="card-header">
+                    <h3>{{ spatioport.name }}</h3>
+                    <p><strong>Adresse :</strong> {{ spatioport.adress.name }}</p>
+                </div>
+            </form>
+            <div class="card-body">
+                <h4>Animaux :</h4>
+                {% if spatioport.animaux|length > 0 %}
+                    <div class="container_card_animal">
+                        {% for animal in spatioport.animaux %}
+                            <!-- Carte Animal -->
+                            <div class="card_animal" onclick="event.stopPropagation(); this.querySelector('form.animal-form').submit();">
+                                <form method="POST" action="{{ path('animal_show', { id: animal.id }) }}" class="animal-form">
+                                    <strong>{{ animal.name }}</strong><br>
+                                    {{ animal.price|number_format(2, '.', ',') }} crédits
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>Aucun animal trouvé pour ce spatioport.</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Liste des Vaisseaux</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Prix</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produit in produits %}
+                <tr>
+                    <td>{{ produit.name }}</td>
+                    <td>{{ produit.description }}</td>
+                    <td>{{ produit.price|number_format(2, '.', ',') }} crédits</td>
+                    <td>
+                        {% if produit.isActive %}
+                            <span class="badge bg-success">Actif</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactif</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

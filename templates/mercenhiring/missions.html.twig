@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+<h1>All Missions</h1>
+<ul>
+    {% for mission in missions %}
+        <li>{{ mission.title }} - {{ mission.status }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

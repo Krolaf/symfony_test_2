@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ animal.name }} - Détails{% endblock %}
+
+{% block content %}
+<div class="container_listing mt-5">
+    <h2 class="mb-4">{{ animal.name }}</h2>
+    <p><strong>Description :</strong> {{ animal.description }}</p>
+    <p><strong>Prix :</strong> {{ animal.price|number_format(2, '.', ',') }} crédits</p>
+    <p><strong>Dangerosité :</strong> {{ animal.dangerosity }}</p>
+    <p><strong>Rareté :</strong> {{ animal.rarity }}</p>
+    <p><strong>Origine :</strong> {{ animal.origin }}</p>
+
+    <h4 class="mt-4">Associé à des spatioports :</h4>
+    {% if animal.spatioport|length > 0 %}
+        <div class="container_card_spatioport">
+            {% for spatioport in animal.spatioport %}
+                    <form method="POST" action="{{ path('spatioport_show', { id: spatioport.id }) }}" class="spatioport-form">
+                        <button type="submit" class="card_spatioport">
+                            <h5>{{ spatioport.name }}</h5>
+                            <p><strong>Adresse :</strong> {{ spatioport.adress.name }}</p>
+                            <p><strong>Coordonnées orbitales :</strong> {{ spatioport.adress.coordonneesOrbitales }}</p>
+                                Voir le spatioport
+                        </button>
+                    </form>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Aucun spatioport associé à cet animal.</p>
+    {% endif %}
+
+    <a href="{{ path('home') }}" class="btn btn-primary mt-4">Retour à l'accueil</a>
+</div>
+{% endblock %}
