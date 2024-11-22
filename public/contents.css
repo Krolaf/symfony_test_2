@@ -1,0 +1,114 @@
+
+/* Cartes */
+.card {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00d8ff;
+    transition: all 0.3s ease-in-out;
+    margin: 1.2vw;
+}
+.card:hover {
+    border: 2px solid #00d8ff;
+    box-shadow: 0 0 20px #00d8ff, 0 0 40px #00d8ff, 0 0 60px #00d8ff;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.container.container_listing{
+    flex-direction: column;
+}
+
+
+.big_card_spatioport{
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00d8ff;
+    transition: all 0.3s ease-in-out;
+    margin: 1.2vw;
+    width: 20vw;
+}
+.big_card_spatioport:hover {
+    border: 2px solid #00d8ff; /* Couleur néon */
+    box-shadow: 0 0 20px #00d8ff, 0 0 40px #00d8ff, 0 0 60px #00d8ff;
+    cursor: pointer;
+}
+
+/* Couleurs de bordure pour la classe first (trou noir) */
+.card.first {
+    border: 2px solid #ff0000;
+    box-shadow: 0 0 15px #ff0000;
+}
+
+.card.first:before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0) 50%, #001b33 70%, transparent 90%);
+    animation: spin 5s linear infinite;
+    z-index: -1;
+    border-radius: 50%;
+}
+
+.container_card_animal{
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ gap: 1vw;
+ flex-wrap: wrap;
+ margin-bottom: 2vh;
+}
+
+.card_animal{
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00d8ff;
+    transition: all 0.3s ease-in-out;
+    padding: 1vw;
+    width: 6vw;
+}
+.card_animal:hover {
+    border: 2px solid #ff3700; /* Couleur néon */
+    box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #ff0000;
+    cursor: pointer;
+}
+.big_card_animal, .card_spatioport{
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00d8ff;
+    transition: all 0.3s ease-in-out;
+    padding: 1vw;
+    width: 20vw;
+    height: 25vh;
+}
+.big_card_animal:hover, .card_spatioport:hover{
+    border: 2px solid #00d8ff; /* Couleur néon */
+    box-shadow: 0 0 20px #00d8ff, 0 0 40px #00d8ff, 0 0 60px #00d8ff;
+    cursor: pointer;
+}
+/* Dernière carte (effet spécial pour last) */
+.card.last {
+    border: 2px solid #00ff00;
+    box-shadow: 0 0 15px #00ff00;
+}
+
+
+
+
+
+
+
+
