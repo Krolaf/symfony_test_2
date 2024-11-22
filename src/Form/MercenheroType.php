@@ -19,30 +19,62 @@ class MercenheroType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Name',
+                'attr' => [
+                    'placeholder' => 'Nom du Mercenhero',
+                    'class' => 'form-control',
+                ],
             ])
             ->add('isAvailable', CheckboxType::class, [
                 'label' => 'Disponible',
                 'required' => false,
+                'attr' => [
+                    'class' => 'form-check-input',
+                ],
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Biography',
+                'attr' => [
+                    'placeholder' => 'Biographie du Mercenhero',
+                    'rows' => 5,
+                    'class' => 'form-control',
+                ],
             ])
             ->add('etat', TextType::class, [
                 'label' => 'State',
+                'attr' => [
+                    'placeholder' => 'État (ex. : prêt, blessé)',
+                    'class' => 'form-control',
+                ],
             ])
             ->add('createdAt', DateTimeType::class, [
-                'widget' => 'single_text', // Utilise un input HTML5
+                'widget' => 'single_text',
                 'label' => 'Date de création',
-                'required' => false, // Facultatif car il est généré automatiquement
+                'required' => false,
+                'attr' => [
+                    'readonly' => true,
+                    'class' => 'form-control',
+                ],
             ])
             ->add('munitions', IntegerType::class, [
                 'label' => 'Ammunitions',
+                'attr' => [
+                    'placeholder' => 'Quantité de munitions',
+                    'class' => 'form-control',
+                ],
             ])
             ->add('lifePoints', IntegerType::class, [
                 'label' => 'Life Points',
+                'attr' => [
+                    'placeholder' => 'Points de vie',
+                    'class' => 'form-control',
+                ],
             ])
             ->add('lvl', IntegerType::class, [
                 'label' => 'Level',
+                'attr' => [
+                    'placeholder' => 'Niveau du Mercenhero',
+                    'class' => 'form-control',
+                ],
             ]);
     }
 

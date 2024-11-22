@@ -106,9 +106,75 @@
 }
 
 
+form {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+#mercenhero{  
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vh;
+    width: 22vw;
+    padding: 1vw;
+    margin: 1vw;
+    border: 2px solid #00d8ff; /* Couleur néon */
+    border-radius: 10px;
+    box-shadow: 0 0 20px #00d8ff, 0 0 40px #00d8ff, 0 0 60px #00d8ff;
+    background: #004e9200;
+} 
 
+#mercenhero > div {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
 
+/* Styles pour le formulaire */
+.form-control {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    color: #333;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+}
 
+.form-check-input {
+    margin-right: 0.5rem;
+}
 
+button.btn-submit {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    background-color: #61dafb;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
 
+button.btn-submit:hover {
+    background-color: #0b132b;
+    color: #61dafb;
+}
+
+.btn_create_mh{
+    font-size: 2vw;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn_create_mh:hover {
+    text-shadow: 
+        0 0 5px #00d8ff, 0 0 10px #00d8ff, 0 0 20px #00d8ff, 
+        0 0 40px #00aaff, 0 0 80px #0077aa, 0 0 120px #005599; 
+    -webkit-text-stroke: 0.03vw black; 
+}    
 
