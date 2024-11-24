@@ -16,6 +16,25 @@ class CompetencesRepository extends ServiceEntityRepository
         parent::__construct($registry, Competences::class);
     }
 
+    public function findByFilters(?int $level, ?int $heroId): array
+{
+    $qb = $this->createQueryBuilder('c');
+
+    if ($level) {
+        $qb->andWhere('c.lvl = :level')
+            ->setParameter('level', $level);
+    }
+
+    if ($heroId) {
+        $qb->join('c.mercenheros', 'h')
+            ->andWhere('h.id = :heroId')
+            ->setParameter('heroId', $heroId);
+    }
+
+    return $qb->getQuery()->getResult();
+}
+
+
 //    /**
 //     * @return Competences[] Returns an array of Competences objects
 //     */

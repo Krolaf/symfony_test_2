@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Competences index{% endblock %}
+
+{% block content %}
+    <h1>Competences index</h1>
+
+    <div class="competence-list-container">
+    <h1>Liste des compétences</h1>
+    <a href="{{ path('competences_new') }}" class="btn-create">Créer une compétence</a>
+
+    <table class="competence-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Niveau</th>
+                <th>Héros associés</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for competence in competences %}
+                <tr>
+                    <td>{{ competence.id }}</td>
+                    <td>{{ competence.name }}</td>
+                    <td>{{ competence.description }}</td>
+                    <td>{{ competence.lvl }}</td>
+                    <td>
+                        {% for hero in competence.mercenheros %}
+                            {{ hero.name }}{% if not loop.last %}, {% endif %}
+                        {% else %}
+                            Aucun
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{{ path('competences_edit', { id: competence.id }) }}" class="btn-edit">Modifier</a>
+                        <form action="{{ path('competences_delete', { id: competence.id }) }}" method="post" style="display: inline-block;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ competence.id) }}">
+                            <button type="submit" class="btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette compétence ?')">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
