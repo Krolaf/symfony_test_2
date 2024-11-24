@@ -32,7 +32,7 @@ class CompetencesType extends AbstractType
                 'class' => Mercenheros::class,
                 'choice_label' => 'name',
                 'multiple' => true,  // Permet de sélectionner plusieurs héros
-                'expanded' => false, // Utilise une liste déroulante
+                'expanded' => true, 
                 'label' => 'Héros associés',
             ]);
     }

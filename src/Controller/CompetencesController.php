@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Competences;
 use App\Form\CompetencesType;
+
 use App\Repository\CompetencesRepository;
 use App\Repository\MercenherosRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,23 +25,29 @@ class CompetencesController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'competences_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, MercenherosRepository $mercenherosRepository): Response
+    #[Route('/competences/new', name: 'competences_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $competence = new Competences();
         $form = $this->createForm(CompetencesType::class, $competence);
+    
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
+            // Synchroniser les relations inverses
+            foreach ($competence->getMercenheros() as $mercenhero) {
+                $mercenhero->addCompetence($competence);
+            }
+    
             $entityManager->persist($competence);
             $entityManager->flush();
-
-            $this->addFlash('success', 'Compétence ajoutée avec succès !');
+    
+            $this->addFlash('success', 'Compétence créée avec succès !');
+    
             return $this->redirectToRoute('competences_index');
         }
-
+    
         return $this->render('competences/new.html.twig', [
-            'competence' => $competence,
             'form' => $form->createView(),
         ]);
     }
@@ -52,24 +60,50 @@ class CompetencesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'competences_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Competences $competence, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(CompetencesType::class, $competence);
-        $form->handleRequest($request);
+    #[Route('/competences/{id}/edit', name: 'competences_edit', methods: ['GET', 'POST'])]
+public function edit(Request $request, Competences $competence, EntityManagerInterface $entityManager): Response
+{
+    $form = $this->createForm(CompetencesType::class, $competence);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+    // Étape 1 : Dump des héros associés avant la soumission
+    dump('Avant soumission', $competence->getMercenheros()->toArray());
 
-            $this->addFlash('success', 'Compétence modifiée avec succès !');
-            return $this->redirectToRoute('competences_index');
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Étape 2 : Dump des héros après la soumission
+        dump('Après soumission', $competence->getMercenheros()->toArray());
+
+        // Récupérer les héros associés avant la soumission
+        $existingMercenheros = new ArrayCollection($competence->getMercenheros()->toArray());
+
+        // Synchroniser les relations inverses
+        foreach ($existingMercenheros as $mercenhero) {
+            if (!$competence->getMercenheros()->contains($mercenhero)) {
+                // Si le héros a été désélectionné, on enlève l'association
+                $mercenhero->removeCompetence($competence);
+                $competence->removeMercenhero($mercenhero);
+            }
         }
 
-        return $this->render('competences/edit.html.twig', [
-            'competence' => $competence,
-            'form' => $form->createView(),
-        ]);
+        // Ajouter les relations sélectionnées
+        foreach ($competence->getMercenheros() as $mercenhero) {
+            $mercenhero->addCompetence($competence);
+        }
+
+        $entityManager->persist($competence);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Compétence modifiée avec succès !');
+
+        return $this->redirectToRoute('competences_index');
     }
+
+    return $this->render('competences/edit.html.twig', [
+        'form' => $form->createView(),
+        'competence' => $competence,
+    ]);
+}
+
 
     #[Route('/{id}', name: 'competences_delete', methods: ['POST'])]
     public function delete(Request $request, Competences $competence, EntityManagerInterface $entityManager): Response
