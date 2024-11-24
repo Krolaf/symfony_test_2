@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use App\Repository\AdressRepository;
@@ -15,7 +16,7 @@ class Adress
     #[ORM\Column]
     private ?float $coordonnees_orbitales = null;
 
-    #[ORM\OneToOne(mappedBy: 'adress', cascade: ['persist', 'remove'])] // Corrected 'Adress' -> 'adress'
+    #[ORM\OneToOne(mappedBy: 'adress', cascade: ['persist', 'remove'])]
     private ?Spatioport $spatioport = null;
 
     #[ORM\Column(length: 255)]
@@ -38,15 +39,14 @@ class Adress
         return $this;
     }
 
-    public function getspatioport(): ?Spatioport
+    public function getSpatioport(): ?Spatioport
     {
         return $this->spatioport;
     }
 
-    public function setspatioport(Spatioport $spatioport): static
+    public function setSpatioport(?Spatioport $spatioport): static
     {
-        // set the owning side of the relation if necessary
-        if ($spatioport->getAdress() !== $this) {
+        if ($spatioport !== null && $spatioport->getAdress() !== $this) {
             $spatioport->setAdress($this);
         }
 
@@ -67,5 +67,3 @@ class Adress
         return $this;
     }
 }
-
-?>

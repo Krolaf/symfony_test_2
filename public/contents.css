@@ -193,6 +193,11 @@ button.btn-submit:hover {
     font-family: 'Orbitron', sans-serif;
 }
 
+h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #00d8ff;
+}
 
 .form-group {
     margin-bottom: 1.5rem;

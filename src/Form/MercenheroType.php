@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Mercenheros;
+use App\Entity\Competences;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -75,6 +77,13 @@ class MercenheroType extends AbstractType
                     'placeholder' => 'Niveau du Mercenhero',
                     'class' => 'form-control',
                 ],
+            ])
+            ->add('competences', EntityType::class, [
+                'class' => Competences::class,
+                'choice_label' => 'name',
+                'multiple' => true,
+                'expanded' => true, // Affiche des cases à cocher
+                'label' => 'Compétences associées',
             ]);
     }
 

@@ -17,7 +17,7 @@ class Spatioport
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToOne(targetEntity: Adress::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'spatioport', targetEntity: Adress::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Adress $adress = null;
 
@@ -70,7 +70,7 @@ class Spatioport
     {
         if (!$this->animaux->contains($bestiary)) {
             $this->animaux->add($bestiary);
-            $bestiary->addspatioport($this);
+            $bestiary->addSpatioport($this);
         }
 
         return $this;
@@ -79,11 +79,9 @@ class Spatioport
     public function removeAnimaux(Bestiary $bestiary): static
     {
         if ($this->animaux->removeElement($bestiary)) {
-            $bestiary->removespatioport($this);
+            $bestiary->removeSpatioport($this);
         }
 
         return $this;
     }
 }
-
-?>

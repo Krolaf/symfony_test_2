@@ -175,6 +175,7 @@ class Mercenheros
     {
         if (!$this->competences->contains($competence)) {
             $this->competences->add($competence);
+            $competence->addMercenhero($this);
         }
 
         return $this;
@@ -182,7 +183,9 @@ class Mercenheros
 
     public function removeCompetence(Competences $competence): static
     {
-        $this->competences->removeElement($competence);
+        if ($this->competences->removeElement($competence)) {
+            $competence->removeMercenhero($this);
+        }
 
         return $this;
     }

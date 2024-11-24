@@ -48,7 +48,12 @@ class MercenheroController extends AbstractController
         $form->handleRequest($request);
     
         if ($form->isSubmitted() && $form->isValid()) {
-            // Persister l'entité en base de données
+            // Synchroniser les relations inversées pour Competences
+            foreach ($mercenhero->getCompetences() as $competence) {
+                $competence->addMercenhero($mercenhero);
+            }
+    
+            // Persister le Mercenhero
             $entityManager->persist($mercenhero);
             $entityManager->flush();
     
@@ -61,6 +66,7 @@ class MercenheroController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    
     
     #[Route('/mercenheros/edit/{id}', name: 'mercenhero_edit')]
     public function edit(Request $request, Mercenheros $mercenhero, EntityManagerInterface $entityManager): Response

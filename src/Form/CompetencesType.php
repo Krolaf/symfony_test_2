@@ -31,8 +31,8 @@ class CompetencesType extends AbstractType
             ->add('mercenheros', EntityType::class, [
                 'class' => Mercenheros::class,
                 'choice_label' => 'name',
-                'multiple' => true,
-                'expanded' => false, // Utiliser un select au lieu de checkboxes
+                'multiple' => true,  // Permet de sélectionner plusieurs héros
+                'expanded' => false, // Utilise une liste déroulante
                 'label' => 'Héros associés',
             ]);
     }
