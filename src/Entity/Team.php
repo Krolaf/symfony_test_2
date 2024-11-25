@@ -44,7 +44,10 @@ class Team
     {
         $this->members = new ArrayCollection();
         $this->assignedMissions = new ArrayCollection();
+        $this->isActive = true; // Par défaut, une équipe est active
+        $this->createdAt = new \DateTimeImmutable(); // Date de création initialisée
     }
+    
 
     public function getId(): ?int
     {

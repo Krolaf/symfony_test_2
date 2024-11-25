@@ -1,26 +1,19 @@
 <?php
-
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Team;
+use App\Form\TeamType;
 use App\Repository\MissionsRepository;
 use App\Repository\TeamRepository;
 use App\Repository\MercenherosRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MercenhiringController extends AbstractController
 {
-    #[Route('/missions', name: 'mission_list')]
-    public function listMissions(MissionsRepository $missionsRepository): Response
-    {
-        $missions = $missionsRepository->findAll();
-
-        return $this->render('mercenhiring/missions.html.twig', [
-            'missions' => $missions,
-        ]);
-    }
-
     #[Route('/teams', name: 'team_list')]
     public function listTeams(TeamRepository $teamRepository): Response
     {
@@ -31,16 +24,79 @@ class MercenhiringController extends AbstractController
         ]);
     }
 
-    #[Route('/mercenheros', name: 'mercenhero_list')]
-    public function listMercenheros(MercenherosRepository $mercenherosRepository): Response
+    #[Route('/team/new', name: 'team_new')]
+    public function newTeam(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $mercenheros = $mercenherosRepository->findAll();
+        $team = new Team();
+        $form = $this->createForm(TeamType::class, $team);
 
-        return $this->render('mercenhiring/mercenheros.html.twig', [
-            'mercenheros' => $mercenheros,
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Validation des membres
+            if ($team->getMembers()->count() < 2 || $team->getMembers()->count() > 5) {
+                $this->addFlash('error', 'Une équipe doit avoir entre 2 et 5 membres.');
+                return $this->redirectToRoute('team_new');
+            }
+
+            // Validation du leader
+            if ($team->getLeader()->getMunitions() <= 80) {
+                $this->addFlash('error', 'Le leader doit avoir plus de 80 munitions.');
+                return $this->redirectToRoute('team_new');
+            }
+
+            $entityManager->persist($team);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Équipe créée avec succès !');
+            return $this->redirectToRoute('team_list');
+        }
+
+        return $this->render('mercenhiring/team_new.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 
+    #[Route('/team/{id}/edit', name: 'team_edit')]
+    public function editTeam(Team $team, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(TeamType::class, $team);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Validation des membres
+            if ($team->getMembers()->count() < 2 || $team->getMembers()->count() > 5) {
+                $this->addFlash('error', 'Une équipe doit avoir entre 2 et 5 membres.');
+                return $this->redirectToRoute('team_edit', ['id' => $team->getId()]);
+            }
+
+            // Validation du leader
+            if ($team->getLeader()->getMunitions() <= 80) {
+                $this->addFlash('error', 'Le leader doit avoir plus de 80 munitions.');
+                return $this->redirectToRoute('team_edit', ['id' => $team->getId()]);
+            }
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Équipe mise à jour avec succès !');
+            return $this->redirectToRoute('team_list');
+        }
+
+        return $this->render('mercenhiring/team_edit.html.twig', [
+            'form' => $form->createView(),
+            'team' => $team,
+        ]);
+    }
+
+    #[Route('/missions', name: 'mission_list')]
+    public function listMissions(MissionsRepository $missionsRepository): Response
+    {
+        $missions = $missionsRepository->findAll();
+
+        return $this->render('mercenhiring/missions.html.twig', [
+            'missions' => $missions,
+        ]);
+    }
     #[Route('/mercenhiring', name: 'mercenhiring')]
     public function index(MissionsRepository $missionsRepository): Response
     {

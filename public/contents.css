@@ -182,8 +182,7 @@ button.btn-submit:hover {
 
 
 .content-form-container {
-    max-width: 600px;
-    margin: 2rem auto;
+    margin: 2rem ;
     padding: 1.5rem;
     border: 2px solid #00d8ff; /* Bordure néon */
     border-radius: 10px;
@@ -191,6 +190,12 @@ button.btn-submit:hover {
     box-shadow: 0 0 10px #00d8ff, 0 0 30px #00d8ff;
     color: #ffffff;
     font-family: 'Orbitron', sans-serif;
+    width: 85%;
+    text-align: center;
+}
+
+.content-form-container th, .content-form-container td{
+    border: solid 1px #00d8ff;
 }
 
 h1 {
