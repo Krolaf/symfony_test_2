@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Mercenheros;
+use App\Entity\Competences;
 use App\Form\MercenheroType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,9 +34,11 @@ class MercenheroController extends AbstractController
     public function list(EntityManagerInterface $entityManager): Response
     {
         $mercenheros = $entityManager->getRepository(Mercenheros::class)->findAll();
-
+        $competences = $entityManager->getRepository(Competences::class)->findAll();
+    
         return $this->render('mercenhero/list.html.twig', [
             'mercenheros' => $mercenheros,
+            'competences' => $competences,
         ]);
     }
 

@@ -3,27 +3,27 @@
 {% block title %}Accueil Mercenheros{% endblock %}
 
 {% block content %}
-<h1>Accueil - Mercenheros</h1>
+<h1>Mercenheros et Compétences</h1>
 
-<a href="{{ path('mercenhero_create') }}" class="btn btn-primary">Créer un nouveau Mercenhero</a>
 
+<div class="content-form-container">
+<h2>Liste des Mercenheros</h2>
 <table>
     <thead>
         <tr>
-            <th>ID</th>
             <th>Nom</th>
             <th>État</th>
             <th>Disponible</th>
             <th>Munitions</th>
             <th>PV</th>
             <th>Niveau</th>
+            <th>Compétences</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for mercenhero in mercenheros %}
             <tr>
-                <td>{{ mercenhero.id }}</td>
                 <td>{{ mercenhero.name }}</td>
                 <td>{{ mercenhero.etat }}</td>
                 <td>{{ mercenhero.isAvailable ? 'Oui' : 'Non' }}</td>
@@ -31,16 +31,68 @@
                 <td>{{ mercenhero.lifePoints }}</td>
                 <td>{{ mercenhero.lvl }}</td>
                 <td>
-                    <a href="{{ path('mercenhero_edit', { id: mercenhero.id }) }}">✏️ Modifier</a>
-                    <a href="{{ path('mercenhero_delete', { id: mercenhero.id }) }}" onclick="return confirm('Voulez-vous vraiment supprimer ce mercenhero ?')">❌ Supprimer</a>
+                    <ul>
+                        {% for competence in mercenhero.competences %}
+                            {{ competence.name }}
+                        {% else %}
+                            Aucune compétence
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <a href="{{ path('mercenhero_edit', { id: mercenhero.id }) }}">✏️</a>
+                    <a href="{{ path('mercenhero_delete', { id: mercenhero.id }) }}" onclick="return confirm('Voulez-vous vraiment supprimer ce mercenhero ?')">❌</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="8">Aucun mercenhero trouvé.</td>
+                <td colspan="9">Aucun mercenhero trouvé.</td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+    <a href="{{ path('mercenhero_create') }}" class="btn btn-primary">Créer un nouveau Mercenhero</a>
+</div>
 
+<div class="content-form-container">
+<h2>Liste des Compétences</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Niveau</th>
+            <th>Héros Associés</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for competence in competences %}
+            <tr>
+                <td>{{ competence.name }}</td>
+                <td>{{ competence.description }}</td>
+                <td>{{ competence.lvl }}</td>
+                <td>
+                    <ul>
+                        {% for hero in competence.mercenheros %}
+                            {{ hero.name }}
+                        {% else %}
+                            Aucun héros associé
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <a href="{{ path('competences_edit', { id: competence.id }) }}">✏️</a>
+                    <a href="{{ path('competences_delete', { id: competence.id }) }}" onclick="return confirm('Voulez-vous vraiment supprimer cette compétence ?')">❌</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">Aucune compétence trouvée.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    <a href="{{ path('competences_new') }}" class="btn btn-secondary">Créer une nouvelle Compétence</a>
+</div>
 {% endblock %}

@@ -61,48 +61,48 @@ class CompetencesController extends AbstractController
     }
 
     #[Route('/competences/{id}/edit', name: 'competences_edit', methods: ['GET', 'POST'])]
-public function edit(Request $request, Competences $competence, EntityManagerInterface $entityManager): Response
-{
-    $form = $this->createForm(CompetencesType::class, $competence);
-    $form->handleRequest($request);
+    public function edit(Request $request, Competences $competence, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(CompetencesType::class, $competence);
+        $form->handleRequest($request);
 
-    // Étape 1 : Dump des héros associés avant la soumission
-    dump('Avant soumission', $competence->getMercenheros()->toArray());
+        // Étape 1 : Dump des héros associés avant la soumission
+        dump('Avant soumission', $competence->getMercenheros()->toArray());
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Étape 2 : Dump des héros après la soumission
-        dump('Après soumission', $competence->getMercenheros()->toArray());
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Étape 2 : Dump des héros après la soumission
+            dump('Après soumission', $competence->getMercenheros()->toArray());
 
-        // Récupérer les héros associés avant la soumission
-        $existingMercenheros = new ArrayCollection($competence->getMercenheros()->toArray());
+            // Récupérer les héros associés avant la soumission
+            $existingMercenheros = new ArrayCollection($competence->getMercenheros()->toArray());
 
-        // Synchroniser les relations inverses
-        foreach ($existingMercenheros as $mercenhero) {
-            if (!$competence->getMercenheros()->contains($mercenhero)) {
-                // Si le héros a été désélectionné, on enlève l'association
-                $mercenhero->removeCompetence($competence);
-                $competence->removeMercenhero($mercenhero);
+            // Synchroniser les relations inverses
+            foreach ($existingMercenheros as $mercenhero) {
+                if (!$competence->getMercenheros()->contains($mercenhero)) {
+                    // Si le héros a été désélectionné, on enlève l'association
+                    $mercenhero->removeCompetence($competence);
+                    $competence->removeMercenhero($mercenhero);
+                }
             }
+
+            // Ajouter les relations sélectionnées
+            foreach ($competence->getMercenheros() as $mercenhero) {
+                $mercenhero->addCompetence($competence);
+            }
+
+            $entityManager->persist($competence);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Compétence modifiée avec succès !');
+
+            return $this->redirectToRoute('competences_index');
         }
 
-        // Ajouter les relations sélectionnées
-        foreach ($competence->getMercenheros() as $mercenhero) {
-            $mercenhero->addCompetence($competence);
-        }
-
-        $entityManager->persist($competence);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Compétence modifiée avec succès !');
-
-        return $this->redirectToRoute('competences_index');
+        return $this->render('competences/edit.html.twig', [
+            'form' => $form->createView(),
+            'competence' => $competence,
+        ]);
     }
-
-    return $this->render('competences/edit.html.twig', [
-        'form' => $form->createView(),
-        'competence' => $competence,
-    ]);
-}
 
 
     #[Route('/{id}', name: 'competences_delete', methods: ['POST'])]
