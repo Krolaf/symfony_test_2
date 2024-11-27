@@ -165,13 +165,14 @@ button.btn-submit:hover {
     color: #61dafb;
 }
 
-.btn_create_mh{
-    font-size: 2vw;
+.btn{
+    font-size: 1.4vw;
     font-weight: bold;
     cursor: pointer;
+    color: #61dafb;
 }
 
-.btn_create_mh:hover {
+.btn:hover {
     text-shadow: 
         0 0 5px #00d8ff, 0 0 10px #00d8ff, 0 0 20px #00d8ff, 
         0 0 40px #00aaff, 0 0 80px #0077aa, 0 0 120px #005599; 
@@ -185,7 +186,6 @@ button.btn-submit:hover {
     display: flex;
     justify-content: center;
     flex-direction: column;
-    margin: 2rem ;
     padding: 1.5rem;
     border: 2px solid #00d8ff; /* Bordure néon */
     border-radius: 10px;
@@ -195,6 +195,7 @@ button.btn-submit:hover {
     font-family: 'Orbitron', sans-serif;
     width: 85%;
     text-align: center;
+    margin: 1vw;
 }
 
 .content-form-container th, .content-form-container td{
@@ -263,3 +264,5 @@ h1 {
 .btn-cancel:hover {
     background: #aa0000;
 }
+
+
