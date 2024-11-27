@@ -28,11 +28,18 @@ class Missions
     #[ORM\Column]
     private ?\DateTimeImmutable $endAt = null;
 
+
+
     #[ORM\Column(length: 255)]
     private ?string $location = null;
 
     #[ORM\Column(length: 50)]
     private ?string $status = 'PENDING';
+
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $completionTime = null; // Temps d'accomplissement en minutes
+
 
     /**
      * @var Collection<int, Competences>
@@ -52,6 +59,44 @@ class Missions
         $this->requiredCompetences = new ArrayCollection();
         $this->assignedTeams = new ArrayCollection();
     }
+
+    public function getStartAt(): ?\DateTimeImmutable
+    {
+        return $this->startAt;
+    }
+
+    public function setStartAt(\DateTimeImmutable $startAt): static
+    {
+        $this->startAt = $startAt;
+
+        return $this;
+    }
+
+    public function getEndAt(): ?\DateTimeImmutable
+    {
+        return $this->endAt;
+    }
+
+    public function setEndAt(\DateTimeImmutable $endAt): static
+    {
+        $this->endAt = $endAt;
+
+        return $this;
+    }
+
+    public function getCompletionTime(): ?int
+    {
+        return $this->completionTime;
+    }
+
+    public function setCompletionTime(?int $completionTime): static
+    {
+        $this->completionTime = $completionTime;
+
+        return $this;
+    }
+
+
 
     public function getId(): ?int
     {
@@ -78,30 +123,6 @@ class Missions
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getStartAt(): ?\DateTimeImmutable
-    {
-        return $this->startAt;
-    }
-
-    public function setStartAt(\DateTimeImmutable $startAt): static
-    {
-        $this->startAt = $startAt;
-
-        return $this;
-    }
-
-    public function getEndAt(): ?\DateTimeImmutable
-    {
-        return $this->endAt;
-    }
-
-    public function setEndAt(\DateTimeImmutable $endAt): static
-    {
-        $this->endAt = $endAt;
 
         return $this;
     }

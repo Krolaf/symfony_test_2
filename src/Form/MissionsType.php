@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -27,13 +28,17 @@ class MissionsType extends AbstractType
             ->add('location', TextType::class, [
                 'label' => 'Lieu',
             ])
-            ->add('startAt', DateTimeType::class, [
-                'widget' => 'single_text',
-                'label' => 'Date de début',
-            ])
-            ->add('endAt', DateTimeType::class, [
-                'widget' => 'single_text',
-                'label' => 'Date de fin',
+            // ->add('startAt', DateTimeType::class, [
+            //     'widget' => 'single_text',
+            //     'label' => 'Date de début',
+            // ])
+            // ->add('endAt', DateTimeType::class, [
+            //     'widget' => 'single_text',
+            //     'label' => 'Date de fin',
+            // ]) 
+            ->add('completionTime', IntegerType::class, [
+                'label' => 'Temps d\'accomplissement (en minutes)',
+                'required' => false,
             ])
             ->add('requiredCompetences', EntityType::class, [
                 'class' => Competences::class,

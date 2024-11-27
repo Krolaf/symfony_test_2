@@ -6,27 +6,103 @@
     {% for mission in missions %}
     <div class="card">
         <h3>{{ mission.title }} - {{ mission.location }}</h3>
+        
+        <!-- Compétences requises -->
         <p>
+            <strong>Compétences requises :</strong><br>
             {% for competence in mission.requiredCompetences %}
-                {{ competence.name }} (Niveau {{ competence.lvl }})<br>
+                - {{ competence.name }} (Niveau {{ competence.lvl }})<br>
             {% endfor %}
         </p>
+        
+        <!-- Temps d'accomplissement -->
+        <p>
+            <strong>Temps d'accomplissement :</strong>
+            {% if mission.completionTime %}
+                {{ mission.completionTime }} minutes
+            {% else %}
+                Inconnu
+            {% endif %}
+        </p>
+            </br>
+        
+        <!-- Statut de la mission -->
+        <p>
+            <strong>Statut :</strong>
+            {% if mission.status == 'IN_PROGRESS' %}
+                En cours
+            {% elseif mission.status == 'COMPLETED' %}
+                Terminée
+            {% else %}
+                En attente
+            {% endif %}
+        </p>
+            </br>
 
-        <!-- Ajouter les équipes assignées -->
+        <!-- Équipes assignées -->
         <p>
             <strong>Équipes assignées :</strong><br>
             {% if mission.assignedTeams|length > 0 %}
                 {% for team in mission.assignedTeams %}
-                    {{ team.name }}<br>
+                    {{ team.name }}
+                    <!-- Formulaire pour retirer une équipe -->
+                    <form method="post" action="{{ path('remove_team_from_mission', {missionId: mission.id, teamId: team.id}) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment retirer cette équipe de la mission ?');">❌</button>
+                    </form>
+                    <br>
                 {% endfor %}
             {% else %}
                 Aucune équipe assignée.<br>
             {% endif %}
         </p>
 
-    <a href="{{ path('mission_assign_team', {id: mission.id}) }}">Assigner une équipe</a>
+        <!-- Bouton dynamique -->
+        {% if mission.status == 'IN_PROGRESS' %}
+
+            <!-- Timer (uniquement si la mission est en cours) -->
+            {% if mission.status == 'IN_PROGRESS' and mission.endAt %}
+                <p>
+                    <p>Mission en cours...</p>
+                    <span id="timer-{{ mission.id }}" data-end-time="{{ mission.endAt|date('U') }}"></span>
+                </p>
+                </br>
+            {% endif %}
+        {% elseif mission.assignedTeams|length > 0 %}
+            <a href="{{ path('mission_start', {id: mission.id}) }}" class="btn btn-success">Partir en mission</a>
+        {% else %}
+            <a href="{{ path('mission_assign_team', {id: mission.id}) }}" class="btn btn-primary">Assigner une équipe</a>
+        {% endif %}
     </div>
     {% endfor %}
 </ul>
+
+<!-- Script pour le timer -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const timers = document.querySelectorAll("[id^='timer-']");
+        timers.forEach(timer => {
+            const endTime = parseInt(timer.dataset.endTime) * 1000; // Convertir en millisecondes
+
+            const updateTimer = () => {
+                const now = Date.now();
+                const remainingTime = endTime - now;
+
+                if (remainingTime > 0) {
+                    const hours = Math.floor((remainingTime / (1000 * 60 * 60)) % 24);
+                    const minutes = Math.floor((remainingTime / (1000 * 60)) % 60);
+                    const seconds = Math.floor((remainingTime / 1000) % 60);
+                    timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                    timer.textContent = "Terminé";
+                    clearInterval(timer.dataset.intervalId);
+                }
+            };
+
+            updateTimer();
+            const intervalId = setInterval(updateTimer, 1000);
+            timer.dataset.intervalId = intervalId;
+        });
+    });
+</script>
 
 {% endblock %}
