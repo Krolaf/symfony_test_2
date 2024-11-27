@@ -101,14 +101,35 @@ class MercenhiringController extends AbstractController
             'missions' => $missions,
         ]);
     }
-    #[Route('/mercenhiring', name: 'mercenhiring')]
-    public function index(MissionsRepository $missionsRepository): Response
-    {
-        $ongoingMissions = $missionsRepository->findBy(['status' => 'IN_PROGRESS']);
 
+    #[Route('/mercenhiring', name: 'mercenhiring')]
+    public function index(MissionsRepository $missionsRepository, EntityManagerInterface $em): Response
+    {
+        // Mettre à jour les statuts avant de récupérer les données
+        $this->updateMissionStatuses($em);
+    
+        $ongoingMissions = $missionsRepository->findBy(['status' => ['IN_PROGRESS']]);
+        $completedMissions = $missionsRepository->findBy(['status' => 'COMPLETED']);
+    
         return $this->render('mercenhiring/index.html.twig', [
             'ongoingMissions' => $ongoingMissions,
+            'completedMissions' => $completedMissions,
         ]);
+    }
+    
+
+    private function updateMissionStatuses(EntityManagerInterface $em): void
+    {
+        $missions = $em->getRepository(Missions::class)->findBy(['status' => 'IN_PROGRESS']);
+
+        $now = new \DateTimeImmutable();
+        foreach ($missions as $mission) {
+            if ($mission->getEndAt() && $mission->getEndAt() <= $now) {
+                $mission->setStatus('COMPLETED');
+            }
+        }
+
+        $em->flush(); // Appliquer les changements à la base de données
     }
 
 

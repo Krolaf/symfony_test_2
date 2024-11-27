@@ -3,15 +3,40 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <div class="dashboard-links">
-        <a href="{{ path('mission_list') }}" class="dashboard-link">Voir toutes les missions</a>
-        <a href="{{ path('team_list') }}" class="dashboard-link">Voir toutes les équipes</a>
-    </div>
+<div class="dashboard-links">
+    <a href="{{ path('mission_list') }}" class="dashboard-link">Voir toutes les missions</a>
+    <a href="{{ path('team_list') }}" class="dashboard-link">Voir toutes les équipes</a>
+</div>
 
-<h1>Missions En cours</h1>
+<!-- Section des missions en cours -->
+{% if ongoingMissions|length > 0 %}
+<h2>Missions en cours</h2>
 <ul>
     {% for mission in ongoingMissions %}
-        <li>{{ mission.title }} - {{ mission.location }}</li>
+    <div class="card">
+        <h3>{{ mission.title }} - {{ mission.location }}</h3>
+        <p><strong>Statut :</strong> {{ mission.status == 'IN_PROGRESS' ? 'En cours' : 'En attente' }}</p>
+        <!-- Ajoutez vos détails et actions ici -->
+    </div>
     {% endfor %}
 </ul>
+{% else %}
+<p>Aucune mission en cours ou en attente.</p>
+{% endif %}
+
+<!-- Section des missions terminées -->
+{% if completedMissions|length > 0 %}
+<h2>Missions Terminées</h2>
+<ul>
+    {% for mission in completedMissions %}
+    <div class="card">
+        <h3>{{ mission.title }} - {{ mission.location }}</h3>
+        <p><strong>Statut :</strong> Terminée</p>
+        <!-- Ajoutez vos détails ici -->
+    </div>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Aucune mission terminée.</p>
+{% endif %}
 {% endblock %}
