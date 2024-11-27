@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="dashboard-links">
-    <a href="{{ path('mission_list') }}" class="dashboard-link">Voir toutes les missions</a>
-    <a href="{{ path('team_list') }}" class="dashboard-link">Voir toutes les équipes</a>
+    <h2><a href="{{ path('mission_list') }}" class="dashboard-link">Tableau des missions</a></h2>
+    <h2><a href="{{ path('team_list') }}" class="dashboard-link">Voir vos équipes</a></h2>
 </div>
 
 <!-- Section des missions en cours -->
@@ -15,13 +15,21 @@
     {% for mission in ongoingMissions %}
     <div class="card">
         <h3>{{ mission.title }} - {{ mission.location }}</h3>
-        <p><strong>Statut :</strong> {{ mission.status == 'IN_PROGRESS' ? 'En cours' : 'En attente' }}</p>
-        <!-- Ajoutez vos détails et actions ici -->
+        <p><strong>Statut :</strong> En cours</p>
+        
+        <!-- Timer pour la mission en cours -->
+        {% if mission.endAt %}
+        </br>
+            <p>
+                <strong>Temps restant :</strong>
+                <span id="timer-{{ mission.id }}" data-end-time="{{ mission.endAt|date('U') }}"></span>
+            </p>
+        {% endif %}
     </div>
     {% endfor %}
 </ul>
 {% else %}
-<p>Aucune mission en cours ou en attente.</p>
+<p>Aucune mission en cours</p>
 {% endif %}
 
 <!-- Section des missions terminées -->
@@ -32,11 +40,39 @@
     <div class="card">
         <h3>{{ mission.title }} - {{ mission.location }}</h3>
         <p><strong>Statut :</strong> Terminée</p>
-        <!-- Ajoutez vos détails ici -->
     </div>
     {% endfor %}
 </ul>
 {% else %}
 <p>Aucune mission terminée.</p>
 {% endif %}
+
+<!-- Script pour le timer -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const timers = document.querySelectorAll("[id^='timer-']");
+        timers.forEach(timer => {
+            const endTime = parseInt(timer.dataset.endTime) * 1000; // Convertir en millisecondes
+
+            const updateTimer = () => {
+                const now = Date.now();
+                const remainingTime = endTime - now;
+
+                if (remainingTime > 0) {
+                    const hours = Math.floor((remainingTime / (1000 * 60 * 60)) % 24);
+                    const minutes = Math.floor((remainingTime / (1000 * 60)) % 60);
+                    const seconds = Math.floor((remainingTime / 1000) % 60);
+                    timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                    timer.textContent = "Terminé";
+                    clearInterval(timer.dataset.intervalId);
+                }
+            };
+
+            updateTimer();
+            const intervalId = setInterval(updateTimer, 1000);
+            timer.dataset.intervalId = intervalId;
+        });
+    });
+</script>
 {% endblock %}

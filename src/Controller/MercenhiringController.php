@@ -95,12 +95,14 @@ class MercenhiringController extends AbstractController
     #[Route('/missions', name: 'mission_list')]
     public function listMissions(MissionsRepository $missionsRepository): Response
     {
-        $missions = $missionsRepository->findAll();
-
+        // Récupérer uniquement les missions en attente
+        $pendingMissions = $missionsRepository->findBy(['status' => 'PENDING']);
+    
         return $this->render('mercenhiring/missions.html.twig', [
-            'missions' => $missions,
+            'missions' => $pendingMissions,
         ]);
     }
+    
 
     #[Route('/mercenhiring', name: 'mercenhiring')]
     public function index(MissionsRepository $missionsRepository, EntityManagerInterface $em): Response
@@ -160,6 +162,12 @@ class MercenhiringController extends AbstractController
             throw $this->createNotFoundException("Mission non trouvée.");
         }
     
+        // Vérifier si la mission est terminée
+        if ($mission->getStatus() === 'COMPLETED') {
+            $this->addFlash('error', 'Cette mission est déjà terminée et ne peut plus être assignée.');
+            return $this->redirectToRoute('mission_list');
+        }
+    
         // Récupérer les équipes valides
         $requiredCompetences = $mission->getRequiredCompetences();
         $teams = $em->getRepository(Team::class)->findAll();
@@ -175,7 +183,7 @@ class MercenhiringController extends AbstractController
         $form = $this->createFormBuilder()
             ->add('team', EntityType::class, [
                 'class' => Team::class,
-                'choices' => $validTeams, // Seules les équipes valides
+                'choices' => $validTeams,
                 'choice_label' => 'name',
                 'placeholder' => 'Choisissez une équipe',
                 'label' => 'Équipe disponible',
@@ -185,8 +193,8 @@ class MercenhiringController extends AbstractController
         $form->handleRequest($request);
     
         if ($form->isSubmitted() && $form->isValid()) {
-            $selectedTeam = $form->get('team')->getData(); // Récupère l'équipe sélectionnée
-            $mission->addAssignedTeam($selectedTeam); // Assigne l'équipe à la mission
+            $selectedTeam = $form->get('team')->getData();
+            $mission->addAssignedTeam($selectedTeam);
             $em->flush();
     
             $this->addFlash('success', 'Équipe assignée avec succès.');
@@ -198,6 +206,7 @@ class MercenhiringController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    
     
     
     #[Route('/missions/{missionId}/remove-team/{teamId}', name: 'remove_team_from_mission', methods: ['POST'])]
@@ -219,44 +228,41 @@ class MercenhiringController extends AbstractController
     }
 
     #[Route('/missions/{id}/start', name: 'mission_start', methods: ['GET'])]
-public function startMission(int $id, EntityManagerInterface $em): Response
-{
-    $mission = $em->getRepository(Missions::class)->find($id);
-
-    if (!$mission) {
-        $this->addFlash('error', 'Mission non trouvée.');
+    public function startMission(int $id, EntityManagerInterface $em): Response
+    {
+        $mission = $em->getRepository(Missions::class)->find($id);
+    
+        if (!$mission) {
+            $this->addFlash('error', 'Mission non trouvée.');
+            return $this->redirectToRoute('mission_list');
+        }
+    
+        if ($mission->getStatus() === 'COMPLETED') {
+            $this->addFlash('error', 'Cette mission est déjà terminée et ne peut plus être relancée.');
+            return $this->redirectToRoute('mission_list');
+        }
+    
+        if ($mission->getAssignedTeams()->isEmpty()) {
+            $this->addFlash('error', 'Aucune équipe assignée à cette mission.');
+            return $this->redirectToRoute('mission_list');
+        }
+    
+        if ($mission->getCompletionTime() === null) {
+            $this->addFlash('error', 'Temps d\'accomplissement non défini pour cette mission.');
+            return $this->redirectToRoute('mission_list');
+        }
+    
+        $now = new \DateTimeImmutable();
+        $mission->setStartAt($now);
+        $mission->setEndAt($now->modify('+' . $mission->getCompletionTime() . ' minutes'));
+        $mission->setStatus('IN_PROGRESS');
+    
+        $em->flush();
+    
+        $this->addFlash('success', 'La mission a commencé avec succès !');
         return $this->redirectToRoute('mission_list');
     }
-
-    if ($mission->getAssignedTeams()->isEmpty()) {
-        $this->addFlash('error', 'Aucune équipe assignée à cette mission.');
-        return $this->redirectToRoute('mission_list');
-    }
-
-    if ($mission->getStatus() === 'IN_PROGRESS') {
-        $this->addFlash('error', 'La mission est déjà en cours.');
-        return $this->redirectToRoute('mission_list');
-    }
-
-    if ($mission->getCompletionTime() === null) {
-        $this->addFlash('error', 'Temps d\'accomplissement non défini pour cette mission.');
-        return $this->redirectToRoute('mission_list');
-    }
-
-    // Définir la date de début et de fin uniquement lors du démarrage
-    $now = new \DateTimeImmutable();
-    $mission->setStartAt($now);
-    $mission->setEndAt($now->modify('+' . $mission->getCompletionTime() . ' minutes'));
-
-    // Mettre à jour le statut de la mission
-    $mission->setStatus('IN_PROGRESS');
-
-    $em->flush();
-
-    $this->addFlash('success', 'La mission a commencé avec succès !');
-    return $this->redirectToRoute('mission_list');
-}
-
+    
     
     
     public function validateTeamCompetences(Team $team, Missions $mission): bool

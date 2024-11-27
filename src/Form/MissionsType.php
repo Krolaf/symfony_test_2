@@ -28,14 +28,7 @@ class MissionsType extends AbstractType
             ->add('location', TextType::class, [
                 'label' => 'Lieu',
             ])
-            // ->add('startAt', DateTimeType::class, [
-            //     'widget' => 'single_text',
-            //     'label' => 'Date de début',
-            // ])
-            // ->add('endAt', DateTimeType::class, [
-            //     'widget' => 'single_text',
-            //     'label' => 'Date de fin',
-            // ]) 
+      
             ->add('completionTime', IntegerType::class, [
                 'label' => 'Temps d\'accomplissement (en minutes)',
                 'required' => false,

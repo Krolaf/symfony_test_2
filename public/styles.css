@@ -76,7 +76,11 @@ nav ul li a {
 nav ul li a:hover {
     -webkit-text-stroke: 0.08vw black; 
 } 
-
+.dashboard-links{
+    display: flex;
+    flex-direction: row;
+    gap: 1vw;
+}
 /* Main content */
 main {
     text-align: center;
