@@ -37,17 +37,16 @@ class Team
     /**
      * @var Collection<int, Missions>
      */
-    #[ORM\OneToMany(targetEntity: Missions::class, mappedBy: 'assignedTeam', orphanRemoval: true)]
-    private Collection $assignedMissions;
+    #[ORM\ManyToMany(targetEntity: Missions::class, mappedBy: 'assignedTeams')]
+    private Collection $missions;
 
     public function __construct()
     {
         $this->members = new ArrayCollection();
-        $this->assignedMissions = new ArrayCollection();
+        $this->missions = new ArrayCollection();
         $this->isActive = true; // Par défaut, une équipe est active
         $this->createdAt = new \DateTimeImmutable(); // Date de création initialisée
     }
-    
 
     public function getId(): ?int
     {
@@ -129,28 +128,25 @@ class Team
     /**
      * @return Collection<int, Missions>
      */
-    public function getAssignedMissions(): Collection
+    public function getMissions(): Collection
     {
-        return $this->assignedMissions;
+        return $this->missions;
     }
 
-    public function addAssignedMission(Missions $assignedMission): static
+    public function addMission(Missions $mission): static
     {
-        if (!$this->assignedMissions->contains($assignedMission)) {
-            $this->assignedMissions->add($assignedMission);
-            $assignedMission->setAssignedTeam($this);
+        if (!$this->missions->contains($mission)) {
+            $this->missions->add($mission);
+            $mission->addAssignedTeam($this); // Si la relation est bidirectionnelle
         }
 
         return $this;
     }
 
-    public function removeAssignedMission(Missions $assignedMission): static
+    public function removeMission(Missions $mission): static
     {
-        if ($this->assignedMissions->removeElement($assignedMission)) {
-            // set the owning side to null (unless already changed)
-            if ($assignedMission->getAssignedTeam() === $this) {
-                $assignedMission->setAssignedTeam(null);
-            }
+        if ($this->missions->removeElement($mission)) {
+            $mission->removeAssignedTeam($this); // Si la relation est bidirectionnelle
         }
 
         return $this;

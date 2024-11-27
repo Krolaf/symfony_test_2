@@ -31,10 +31,6 @@ class Missions
     #[ORM\Column(length: 255)]
     private ?string $location = null;
 
-    #[ORM\ManyToOne(inversedBy: 'assignedMissions')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Team $assignedTeam = null;
-
     #[ORM\Column(length: 50)]
     private ?string $status = 'PENDING';
 
@@ -44,11 +40,18 @@ class Missions
     #[ORM\ManyToMany(targetEntity: Competences::class)]
     private Collection $requiredCompetences;
 
+    /**
+     * @var Collection<int, Team>
+     */
+    #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'missions')]
+    #[ORM\JoinTable(name: 'missions_teams')] // Table de jointure missions_teams
+    private Collection $assignedTeams;
+
     public function __construct()
     {
         $this->requiredCompetences = new ArrayCollection();
+        $this->assignedTeams = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -115,19 +118,7 @@ class Missions
         return $this;
     }
 
-    public function getAssignedTeam(): ?Team
-    {
-        return $this->assignedTeam;
-    }
-
-    public function setAssignedTeam(?Team $assignedTeam): static
-    {
-        $this->assignedTeam = $assignedTeam;
-
-        return $this;
-    }
-
-        public function getStatus(): ?string
+    public function getStatus(): ?string
     {
         return $this->status;
     }
@@ -163,4 +154,30 @@ class Missions
         return $this;
     }
 
+    /**
+     * @return Collection<int, Team>
+     */
+    public function getAssignedTeams(): Collection
+    {
+        return $this->assignedTeams;
+    }
+
+    public function addAssignedTeam(Team $team): static
+    {
+        if (!$this->assignedTeams->contains($team)) {
+            $this->assignedTeams->add($team);
+            $team->addMission($this); // Si la relation est bidirectionnelle
+        }
+
+        return $this;
+    }
+
+    public function removeAssignedTeam(Team $team): static
+    {
+        if ($this->assignedTeams->removeElement($team)) {
+            $team->removeMission($this); // Si la relation est bidirectionnelle
+        }
+
+        return $this;
+    }
 }

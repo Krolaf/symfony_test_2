@@ -161,7 +161,7 @@ class MercenhiringController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $selectedTeam = $form->get('team')->getData(); // Récupère l'équipe sélectionnée
-            $mission->setAssignedTeam($selectedTeam); // Assigne l'équipe à la mission
+            $mission->addAssignedTeam($selectedTeam); // Assigne l'équipe à la mission
             $em->flush();
 
             $this->addFlash('success', 'Équipe assignée avec succès.');
