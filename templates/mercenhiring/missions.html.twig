@@ -2,17 +2,21 @@
 
 {% block content %}
 <h2>Missions</h2>
-<ul>
+<ul >
     {% for mission in missions %}
-        <div class="card">
-            {{ mission.title }} - {{ mission.location }}
-            </br>
-                {% for competence in mission.requiredCompetences %}
-                    {{ competence.name }} (Niveau {{ competence.lvl }})
-                {% endfor %}
-            
-        </div>
-    {% endfor %}
+    <a href="{{ path('mission_assign_team', {id: mission.id}) }}" >
+    <div class="card">
+        <h3>{{ mission.title }} - {{ mission.location }}</h3>
+        <p>
+            {% for competence in mission.requiredCompetences %}
+                - {{ competence.name }} (Niveau {{ competence.lvl }})<br>
+            {% endfor %}
+        </p>
+        Assigner une équipe
+    </div>
+    </a>
+{% endfor %}
+
 </ul>
 
 {% endblock %}

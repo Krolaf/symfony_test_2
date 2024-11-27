@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assigner une équipe{% endblock %}
+
+{% block content %}
+    <h2>Assigner une équipe à la mission : {{ mission.title }}</h2>
+    <p><strong>Description :</strong> {{ mission.description }}</p>
+    <p><strong>Lieu :</strong> {{ mission.location }}</p>
+    <p><strong>Compétences requises :</strong></p>
+    <ul>
+        {% for competence in mission.requiredCompetences %}
+            {{ competence.name }} (Niveau {{ competence.lvl }})
+        {% else %}
+            Pas de competences spécifiques
+        {% endfor %}
+    </ul>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">Assigner</button>
+    {{ form_end(form) }}
+{% endblock %}

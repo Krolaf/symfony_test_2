@@ -5,6 +5,7 @@ use App\Entity\Team;
 use App\Entity\Missions;
 use App\Form\TeamType;
 use App\Form\MissionsType;
+use App\Form\ValidTeamType;
 use App\Repository\MissionsRepository;
 use App\Repository\TeamRepository;
 use App\Repository\MercenherosRepository;
@@ -127,7 +128,52 @@ class MercenhiringController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    
+
+        #[Route('/missions/{id}/assign-team', name: 'mission_assign_team', methods: ['GET', 'POST'])]
+        public function assignTeam(int $id, EntityManagerInterface $em, Request $request): Response
+        {
+
+        $mission = $em->getRepository(Missions::class)->find($id);
+
+        if (!$mission) {
+            throw $this->createNotFoundException("Mission non trouvée.");
+        }
+
+        // Récupérer les équipes valides
+        $requiredCompetences = $mission->getRequiredCompetences();
+        $teams = $em->getRepository(Team::class)->findAll();
+
+        $validTeams = [];
+        foreach ($teams as $team) {
+            foreach ($team->getMembers() as $member) {
+                if ($member->getCompetences()->exists(fn($key, $competence) => $requiredCompetences->contains($competence))) {
+                    $validTeams[] = $team;
+                    break;
+                }
+            }
+        }
+
+        // Utilisation de ValidTeamType
+        $form = $this->createForm(ValidTeamType::class, null, [
+            'data_class' => null, // Pas besoin de lier directement à l'entité Team
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $selectedTeam = $form->get('team')->getData(); // Récupère l'équipe sélectionnée
+            $mission->setAssignedTeam($selectedTeam); // Assigne l'équipe à la mission
+            $em->flush();
+
+            $this->addFlash('success', 'Équipe assignée avec succès.');
+            return $this->redirectToRoute('mission_list');
+        }
+
+        return $this->render('mercenhiring/assign_team.html.twig', [
+            'mission' => $mission,
+            'form' => $form->createView(),
+        ]);
+    }
+
     public function validateTeamCompetences(Team $team, Missions $mission): bool
     {
         foreach ($mission->getRequiredCompetences() as $competence) {
@@ -144,6 +190,7 @@ class MercenhiringController extends AbstractController
         }
         return true;
     }
+    
 }
 
 ?>
