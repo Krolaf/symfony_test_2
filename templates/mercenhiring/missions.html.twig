@@ -1,10 +1,18 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-<h1>All Missions</h1>
+<h2>Missions</h2>
 <ul>
     {% for mission in missions %}
-        <li>{{ mission.title }} - {{ mission.status }}</li>
+        <div class="card">
+            {{ mission.title }} - {{ mission.location }}
+            </br>
+                {% for competence in mission.requiredCompetences %}
+                    {{ competence.name }} (Niveau {{ competence.lvl }})
+                {% endfor %}
+            
+        </div>
     {% endfor %}
 </ul>
+
 {% endblock %}

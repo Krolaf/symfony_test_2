@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MissionsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -30,11 +32,22 @@ class Missions
     private ?string $location = null;
 
     #[ORM\ManyToOne(inversedBy: 'assignedMissions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Team $assignedTeam = null;
 
     #[ORM\Column(length: 50)]
     private ?string $status = 'PENDING';
+
+    /**
+     * @var Collection<int, Competences>
+     */
+    #[ORM\ManyToMany(targetEntity: Competences::class)]
+    private Collection $requiredCompetences;
+
+    public function __construct()
+    {
+        $this->requiredCompetences = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -122,6 +135,30 @@ class Missions
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Competences>
+     */
+    public function getRequiredCompetences(): Collection
+    {
+        return $this->requiredCompetences;
+    }
+
+    public function addRequiredCompetence(Competences $requiredCompetence): static
+    {
+        if (!$this->requiredCompetences->contains($requiredCompetence)) {
+            $this->requiredCompetences->add($requiredCompetence);
+        }
+
+        return $this;
+    }
+
+    public function removeRequiredCompetence(Competences $requiredCompetence): static
+    {
+        $this->requiredCompetences->removeElement($requiredCompetence);
 
         return $this;
     }

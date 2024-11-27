@@ -2,7 +2,9 @@
 namespace App\Controller;
 
 use App\Entity\Team;
+use App\Entity\Missions;
 use App\Form\TeamType;
+use App\Form\MissionsType;
 use App\Repository\MissionsRepository;
 use App\Repository\TeamRepository;
 use App\Repository\MercenherosRepository;
@@ -106,5 +108,43 @@ class MercenhiringController extends AbstractController
             'ongoingMissions' => $ongoingMissions,
         ]);
     }
+
+
+    public function newMission(Request $request, EntityManagerInterface $em): Response
+    {
+        $mission = new Missions();
+        $form = $this->createForm(MissionsType::class, $mission);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($mission);
+            $em->flush();
+
+            return $this->redirectToRoute('mission_list');
+        }
+
+        return $this->render('mercenhiring/missions.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    
+    public function validateTeamCompetences(Team $team, Missions $mission): bool
+    {
+        foreach ($mission->getRequiredCompetences() as $competence) {
+            $found = false;
+            foreach ($team->getMembers() as $member) {
+                if ($member->getCompetences()->contains($competence)) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
+
 ?>
+
