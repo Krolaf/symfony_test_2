@@ -1,6 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
+<div id="alert" class="hidden">
+    <p id="alert-message"></p>
+    <button id="alert-close">OK</button>
+</div>
+
 <h2>Missions En Attente</h2>
 <ul>
     {% for mission in missions %}
@@ -22,7 +27,7 @@
                     <strong>Temps d'accomplissement :</strong>
                     {{ mission.completionTime ? mission.completionTime ~ ' minutes' : 'Inconnu' }}
                 </p>
-                
+                <br>
                 <!-- Équipes assignées -->
                 <p>
                     <strong>Équipes assignées :</strong><br>

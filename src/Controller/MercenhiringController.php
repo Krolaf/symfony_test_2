@@ -153,6 +153,20 @@ class MercenhiringController extends AbstractController
         ]);
     }
 
+        
+    private function isTeamBusy(Team $team, EntityManagerInterface $em): bool
+    {
+        // Vérifie si l'équipe est assignée à une mission en cours
+        $ongoingMissions = $em->getRepository(Missions::class)->findBy(['status' => 'IN_PROGRESS']);
+        foreach ($ongoingMissions as $mission) {
+            if ($mission->getAssignedTeams()->contains($team)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
     #[Route('/missions/{id}/assign-team', name: 'mission_assign_team', methods: ['GET', 'POST'])]
     public function assignTeam(int $id, EntityManagerInterface $em, Request $request): Response
     {
@@ -162,28 +176,29 @@ class MercenhiringController extends AbstractController
             throw $this->createNotFoundException("Mission non trouvée.");
         }
     
-        // Vérifier si la mission est terminée
-        if ($mission->getStatus() === 'COMPLETED') {
-            $this->addFlash('error', 'Cette mission est déjà terminée et ne peut plus être assignée.');
-            return $this->redirectToRoute('mission_list');
-        }
-    
-        // Récupérer les équipes valides
+        // Récupérer les compétences requises pour la mission
         $requiredCompetences = $mission->getRequiredCompetences();
-        $teams = $em->getRepository(Team::class)->findAll();
     
+        // Filtrer les équipes valides et disponibles
+        $teams = $em->getRepository(Team::class)->findAll();
         $validTeams = [];
         foreach ($teams as $team) {
-            if ($this->validateTeamCompetences($team, $mission)) {
+            if ($this->validateTeamCompetences($team, $mission) && !$this->isTeamBusy($team, $em)) {
                 $validTeams[] = $team;
             }
         }
     
-        // Création du formulaire avec les équipes valides
+        // Si aucune équipe n'est disponible
+        if (empty($validTeams)) {
+            $this->addFlash('error', 'Aucune équipe disponible pour cette mission.');
+            return $this->redirectToRoute('mission_list');
+        }
+    
+        // Création du formulaire
         $form = $this->createFormBuilder()
             ->add('team', EntityType::class, [
                 'class' => Team::class,
-                'choices' => $validTeams,
+                'choices' => $validTeams, // Seules les équipes valides et disponibles
                 'choice_label' => 'name',
                 'placeholder' => 'Choisissez une équipe',
                 'label' => 'Équipe disponible',
@@ -193,7 +208,15 @@ class MercenhiringController extends AbstractController
         $form->handleRequest($request);
     
         if ($form->isSubmitted() && $form->isValid()) {
-            $selectedTeam = $form->get('team')->getData();
+            $selectedTeam = $form->get('team')->getData(); // Récupère l'équipe sélectionnée
+    
+            // Vérification finale si l'équipe est occupée
+            if ($this->isTeamBusy($selectedTeam, $em)) {
+                $this->addFlash('error', 'Votre équipe est déjà engagée dans une autre mission.');
+                return $this->redirectToRoute('mission_list');
+            }
+    
+            // Assigner l'équipe à la mission
             $mission->addAssignedTeam($selectedTeam);
             $em->flush();
     
@@ -206,7 +229,6 @@ class MercenhiringController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    
     
     
     #[Route('/missions/{missionId}/remove-team/{teamId}', name: 'remove_team_from_mission', methods: ['POST'])]
@@ -228,40 +250,53 @@ class MercenhiringController extends AbstractController
     }
 
     #[Route('/missions/{id}/start', name: 'mission_start', methods: ['GET'])]
-    public function startMission(int $id, EntityManagerInterface $em): Response
-    {
-        $mission = $em->getRepository(Missions::class)->find($id);
-    
-        if (!$mission) {
-            $this->addFlash('error', 'Mission non trouvée.');
-            return $this->redirectToRoute('mission_list');
-        }
-    
-        if ($mission->getStatus() === 'COMPLETED') {
-            $this->addFlash('error', 'Cette mission est déjà terminée et ne peut plus être relancée.');
-            return $this->redirectToRoute('mission_list');
-        }
-    
-        if ($mission->getAssignedTeams()->isEmpty()) {
-            $this->addFlash('error', 'Aucune équipe assignée à cette mission.');
-            return $this->redirectToRoute('mission_list');
-        }
-    
-        if ($mission->getCompletionTime() === null) {
-            $this->addFlash('error', 'Temps d\'accomplissement non défini pour cette mission.');
-            return $this->redirectToRoute('mission_list');
-        }
-    
-        $now = new \DateTimeImmutable();
-        $mission->setStartAt($now);
-        $mission->setEndAt($now->modify('+' . $mission->getCompletionTime() . ' minutes'));
-        $mission->setStatus('IN_PROGRESS');
-    
-        $em->flush();
-    
-        $this->addFlash('success', 'La mission a commencé avec succès !');
+public function startMission(int $id, EntityManagerInterface $em): Response
+{
+    $mission = $em->getRepository(Missions::class)->find($id);
+
+    if (!$mission) {
+        $this->addFlash('error', 'Mission non trouvée.');
         return $this->redirectToRoute('mission_list');
     }
+
+    if ($mission->getAssignedTeams()->isEmpty()) {
+        $this->addFlash('error', 'Aucune équipe assignée à cette mission.');
+        return $this->redirectToRoute('mission_list');
+    }
+
+    if ($mission->getStatus() === 'IN_PROGRESS') {
+        $this->addFlash('error', 'La mission est déjà en cours.');
+        return $this->redirectToRoute('mission_list');
+    }
+
+    if ($mission->getCompletionTime() === null) {
+        $this->addFlash('error', 'Temps d\'accomplissement non défini pour cette mission.');
+        return $this->redirectToRoute('mission_list');
+    }
+
+    // Vérifie si une des équipes assignées est déjà en mission
+    foreach ($mission->getAssignedTeams() as $team) {
+        if ($this->isTeamBusy($team, $em)) {
+            $this->addFlash('error', 'L\'équipe "' . $team->getName() . '" est déjà engagée dans une autre mission.');
+            $this->addFlash('error', 'Votre équipe est déjà engagée dans une autre mission.');
+            return $this->redirectToRoute('mission_list');
+        }
+    }
+
+    // Définir la date de début et de fin uniquement lors du démarrage
+    $now = new \DateTimeImmutable();
+    $mission->setStartAt($now);
+    $mission->setEndAt($now->modify('+' . $mission->getCompletionTime() . ' minutes'));
+
+    // Mettre à jour le statut de la mission
+    $mission->setStatus('IN_PROGRESS');
+
+    $em->flush();
+
+    $this->addFlash('success', 'La mission a commencé avec succès !');
+    return $this->redirectToRoute('mission_list');
+}
+
     
     
     

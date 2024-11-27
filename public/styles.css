@@ -132,3 +132,61 @@ body.about main {
     border: 2px solid #00d8ff;
 }
 
+
+/* Animation "pulse" */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #ff0000;
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 30px #ff3700, 0 0 50px #ff3700, 0 0 80px #ff3700;
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #ff0000;
+    }
+}
+.hidden{
+    opacity: 0;
+}
+/* Appliquer l'animation à la boîte d'alerte */
+#alert {
+    opacity: 1;
+    border-radius: 10px;
+    border: 2px solid #ff3700;
+    box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #ff0000;
+    animation: pulse 1.5s infinite;
+}
+
+/* Texte avec effet néon */
+#alert-message {
+    text-shadow: 
+        0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 20px #ff0000,
+        0 0 40px #dd0d0d, 0 0 80px #aa0000, 0 0 120px #990000;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Bouton pour fermer l'alerte */
+#alert-close {
+    font-size: 1.4vw;
+    font-weight: bold;
+    cursor: pointer;
+    color: #fb9261;
+    background: none;
+    border: none;
+    outline: none;
+    margin-top: 10px;
+    text-shadow: 0 0 10px #fb9261, 0 0 20px #ff5a36;
+    animation: pulse 2s infinite;
+}
+
+#alert-close:hover {
+    color: #ff5a36;
+    text-shadow: 0 0 20px #ff5a36, 0 0 40px #ff7a56;
+    transform: scale(1.1);
+}
