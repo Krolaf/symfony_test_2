@@ -4,10 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
     // Récupère le flash message via Symfony
-    const flashMessage = "{{ app.flashes('error')|join('<br>')|escape('js') }}";
 
+    // const flashMessage = "{{ app.flashes('error')|join('<br>')|escape('js') }}";
     // Vérifie si un message d'erreur spécifique est présent
-    if (flashMessage && flashMessage.includes("Votre équipe est déjà engagée dans une autre mission")) {
+    if (flashMessage ) {
         const alert = document.getElementById("alert");
         const alertMessage = document.getElementById("alert-message");
         const alertClose = document.getElementById("alert-close");

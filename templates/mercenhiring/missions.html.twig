@@ -1,10 +1,12 @@
 {% extends 'base.html.twig' %}
 
+{% block error %}
+    {{parent}}
+{% endblock %}
+
 {% block content %}
-<div id="alert" class="hidden">
-    <p id="alert-message"></p>
-    <button id="alert-close">OK</button>
-</div>
+
+
 
 <h2>Missions En Attente</h2>
 <ul>

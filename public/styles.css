@@ -148,9 +148,11 @@ body.about main {
         box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #ff0000;
     }
 }
-.hidden{
-    opacity: 0;
-}
+
+/* .hidden{
+    display: none;
+} */
+
 /* Appliquer l'animation à la boîte d'alerte */
 #alert {
     opacity: 1;

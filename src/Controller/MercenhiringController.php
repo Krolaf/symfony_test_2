@@ -277,8 +277,8 @@ public function startMission(int $id, EntityManagerInterface $em): Response
     // Vérifie si une des équipes assignées est déjà en mission
     foreach ($mission->getAssignedTeams() as $team) {
         if ($this->isTeamBusy($team, $em)) {
-            $this->addFlash('error', 'L\'équipe "' . $team->getName() . '" est déjà engagée dans une autre mission.');
-            $this->addFlash('error', 'Votre équipe est déjà engagée dans une autre mission.');
+            $this->addFlash('error_team_busy', 'L\'équipe "' . $team->getName() . '" est déjà engagée dans une autre mission.');
+            // $this->addFlash('error', 'Votre équipe est déjà engagée dans une autre mission.');
             return $this->redirectToRoute('mission_list');
         }
     }

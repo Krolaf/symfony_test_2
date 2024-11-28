@@ -50,7 +50,18 @@
     </nav>
 
     <main>
-        {% block content %}{% endblock %}
+        <div class="error_spot">
+            {% block error %}
+                {% for message in app.flashes('error_team_busy') %}
+                    <div id="alert" class="alert ">
+                        <p id="alert-message">{{message}}</p>
+                        <button id="alert-close">OK</button>
+                    </div>
+                {% endfor %}
+            {% endblock %}
+        </div>
+        {% block content %}
+        {% endblock %}
     </main>
 
     <footer>
